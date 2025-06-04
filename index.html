@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Emocional Interactiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A2342; /* Azul oscuro principal */
+            color: #F3F4F6; /* Gris claro para texto general */
+            margin: 0;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align to top for scrolling */
+        }
+        .main-container {
+            width: 100%;
+            max-width: 800px; /* Wider for more content */
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        .app-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #FFDB58; /* Mostaza para el título */
+            margin-bottom: 0.5rem;
+        }
+        .app-tagline {
+            font-size: 1.1rem;
+            color: #D1D5DB; /* Gris medio */
+        }
+
+        /* Topic Selection Screen */
+        .topic-card {
+            background-color: #001F3F; /* Azul oscuro secundario */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #FFDB58; /* Accent border */
+            display: flex; /* For image and text layout */
+            align-items: center; /* Vertically align items */
+            gap: 1.5rem; /* Space between image and text */
+        }
+        .topic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+        }
+        .topic-card-image {
+            width: 100px; /* Fixed width for topic image */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            flex-shrink: 0; /* Prevent image from shrinking */
+        }
+        .topic-card-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FFDB58; /* Mostaza */
+            margin-bottom: 0.5rem;
+        }
+        .topic-card-content p {
+            font-size: 0.95rem;
+            color: #D1D5DB;
+            line-height: 1.6;
+        }
+
+        /* Presentation Screen */
+        #presentation-screen {
+            background-color: #001F3F; /* Azul oscuro secundario */
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        .slide-header {
+            display: flex;
+            align-items: flex-start; /* Align items to the top */
+            gap: 1.5rem; /* Space between image and title/content */
+            margin-bottom: 1.5rem;
+        }
+        .slide-image {
+            width: 150px; /* Adjust as needed */
+            height: auto;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem; /* Align better with title */
+        }
+        .slide-title-content-wrapper {
+            flex-grow: 1;
+        }
+        .slide-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #FFDB58; /* Mostaza */
+            margin-bottom: 1rem;
+        }
+        .slide-content p, .slide-content li {
+            font-size: 1rem;
+            color: #F3F4F6;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .reflection-prompt {
+            background-color: #0A2342; /* Azul oscuro principal (slightly different) */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px dashed #FFDB58;
+        }
+        .reflection-prompt h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #FFC300; /* Mostaza más brillante */
+            margin-bottom: 0.5rem;
+        }
+
+        /* AI Interaction Module */
+        .ai-interaction-module {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #FFDB58;
+        }
+        .ai-interaction-module h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #FFDB58;
+            margin-bottom: 1rem;
+        }
+        textarea.ai-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 2px solid #FFDB58;
+            background-color: #0A2342;
+            color: #F3F4F6;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            resize: vertical;
+        }
+        textarea.ai-input:focus {
+            outline: none;
+            border-color: #FFC300;
+            box-shadow: 0 0 0 3px rgba(255, 219, 88, 0.3);
+        }
+        .ai-submit-button {
+            background-color: #FFDB58; /* Mostaza */
+            color: #0A2342; /* Texto azul oscuro */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+        .ai-submit-button:hover {
+            background-color: #FFC300;
+            transform: translateY(-2px);
+        }
+        .ai-submit-button:disabled {
+            background-color: #A0522D;
+            color: #6B7280;
+            cursor: not-allowed;
+        }
+        .ai-response-area {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #0A2342;
+            border-radius: 0.5rem;
+            min-height: 80px;
+            color: #E5E7EB;
+            line-height: 1.6;
+            border: 1px solid #FFC300;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #FFDB58;
+            animation: spin 1s ease infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navigation */
+        .navigation-buttons {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .nav-button {
+            background-color: #FFC300; /* Mostaza más brillante */
+            color: #001F3F;
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .nav-button:hover {
+            background-color: #FFDB58;
+        }
+        .nav-button:disabled {
+            background-color: #A0522D; /* Similar to AI button disabled */
+            color: #6B7280;
+            cursor: not-allowed;
+        }
+        .back-to-topics {
+            background-color: transparent;
+            color: #FFDB58;
+            border: 1px solid #FFDB58;
+        }
+        .back-to-topics:hover {
+            background-color: rgba(255, 219, 88, 0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="app-header">
+            <h1 class="app-title">Guía Emocional Interactiva</h1>
+            <p class="app-tagline">Explora, reflexiona y crece con apoyo personalizado.</p>
+        </header>
+
+        <!-- Topic Selection Screen -->
+        <section id="topic-selection-screen">
+            <h2 class="text-2xl font-semibold text-white mb-6 text-center">Selecciona un tema para comenzar:</h2>
+            <!-- Las tarjetas de temas se generarán aquí por JS -->
+        </section>
+
+        <!-- Presentation Screen -->
+        <section id="presentation-screen" class="hidden">
+            <div id="slide-container">
+                <div class="slide-header">
+                    <img id="slide-image" src="" alt="Imagen de la diapositiva" class="slide-image hidden">
+                    <div class="slide-title-content-wrapper">
+                        <h2 id="slide-title" class="slide-title"></h2>
+                        <div id="slide-content" class="slide-content">
+                            <!-- El contenido de la diapositiva se cargará aquí -->
+                        </div>
+                    </div>
+                </div>
+                <div id="reflection-prompt-container" class="reflection-prompt hidden">
+                    <h4>Para Reflexionar:</h4>
+                    <p id="reflection-prompt-text"></p>
+                </div>
+            </div>
+
+            <div class="ai-interaction-module">
+                <h4>Reflexión Asistida por IA</h4>
+                <p class="text-sm text-gray-400 mb-3">Escribe tus pensamientos o preguntas sobre el tema actual para una perspectiva guiada.</p>
+                <textarea id="ai-user-input" class="ai-input" placeholder="Escribe aquí tus reflexiones o preguntas..."></textarea>
+                <button id="ai-submit-button" class="ai-submit-button">Pedir Reflexión Asistida</button>
+                <div id="ai-response-area" class="ai-response-area hidden">
+                    <div id="ai-loading-spinner" class="loading-spinner hidden"></div>
+                    <p id="ai-response-text"></p>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button id="prev-slide-button" class="nav-button">Anterior</button>
+                <button id="back-to-topics-button" class="nav-button back-to-topics">Volver a Temas</button>
+                <button id="next-slide-button" class="nav-button">Siguiente</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // --- Data para los Temas y Diapositivas ---
+        const topicsData = {
+            "tiempo-impacto": {
+                title: "Comprendiendo el Tiempo y Tu Bienestar",
+                description: "Explora cómo tu percepción del tiempo influye en tus emociones y decisiones.",
+                topicImage: "https://placehold.co/100x100/001F3F/FFDB58?text=Tiempo", // Placeholder for topic
+                slides: [
+                    {
+                        title: "El Tiempo: Un Laberinto Personal",
+                        content: "<p>A menudo, el tiempo se siente como un laberinto complejo, donde el pasado, presente y futuro se entrelazan de maneras únicas para cada uno. El ayer puede proyectar sombras o luces sobre el hoy, mientras que el mañana puede llenarnos de esperanza o ansiedad.</p>",
+                        reflectionPrompt: "¿Cómo describirías tu relación personal con el tiempo? ¿Es un aliado, un enemigo, o algo intermedio?",
+                        aiContext: "El usuario está reflexionando sobre el tiempo como un laberinto personal y su relación con él.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Laberinto" // Placeholder for slide
+                    },
+                    {
+                        title: "El Doble Filo del Tiempo: Tirano y Maestro",
+                        content: "<p>El tiempo puede ser un tirano implacable, presionándonos con sus demandas y recordándonos lo que 'deberíamos' estar haciendo. Pero también es un maestro silencioso, ofreciendo lecciones valiosas a través de la experiencia y la perspectiva que solo él puede dar.</p>",
+                        reflectionPrompt: "¿En qué momentos sientes el tiempo como un tirano? ¿Y cuándo lo has experimentado como un maestro que te ha ofrecido sabiduría?",
+                        aiContext: "El usuario está explorando la dualidad del tiempo como tirano y maestro.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Dualidad"
+                    }
+                ]
+            },
+            "tejiendo-vida": {
+                title: "Tejiendo Tu Realidad: Decisiones y Experiencias",
+                description: "Analiza cómo tus elecciones y vivencias forman el tapiz único de tu vida.",
+                topicImage: "https://placehold.co/100x100/001F3F/FFDB58?text=Tejido",
+                slides: [
+                    {
+                        title: "La Vida como un Tejido Único",
+                        content: "<p>Imagina tu vida como un gran tejido. Cada hilo representa una decisión, un pensamiento, una relación o una experiencia. Algunos hilos son vibrantes y fuertes, otros pueden estar deshilachados o tener nudos. Todos juntos, forman el patrón único que eres tú.</p>",
+                        reflectionPrompt: "Si tu vida es un tejido, ¿cuáles son los hilos (decisiones, experiencias) más significativos que lo componen actualmente? ¿Qué colores predominan?",
+                        aiContext: "El usuario está visualizando su vida como un tejido compuesto por decisiones y experiencias.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Tapiz+Vital"
+                    },
+                    {
+                        title: "Nudos y Remiendos: Aceptando la Imperfección",
+                        content: "<p>Ningún tejido es perfecto. En la vida, encontramos 'nudos' (desafíos, errores) y necesitamos 'remiendos' (aprendizaje, sanación). Estas imperfecciones no devalúan el tejido, sino que a menudo le añaden profundidad y carácter.</p>",
+                        reflectionPrompt: "¿Cómo tiendes a reaccionar ante los 'nudos' o imperfecciones en tu vida? ¿Qué 'remiendos' has encontrado útiles?",
+                        aiContext: "El usuario reflexiona sobre cómo maneja las imperfecciones y desafíos en su vida, viéndolos como parte de su 'tejido'.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Imperfeccion"
+                    }
+                ]
+            },
+            "vivir-presente": {
+                title: "Anclándote en el Ahora: El Poder del Presente",
+                description: "Descubre estrategias para conectar con el momento actual y reducir la rumiación.",
+                topicImage: "https://placehold.co/100x100/001F3F/FFDB58?text=Ahora",
+                slides: [
+                    {
+                        title: "El Desafío Constante de Estar Presente",
+                        content: "<p>Nuestra mente es una viajera incansable, saltando del pasado al futuro con facilidad. Anclarnos en el 'ahora' requiere práctica y consciencia, pero es donde realmente transcurre la vida y donde podemos encontrar paz.</p>",
+                        reflectionPrompt: "¿Qué tan fácil o difícil te resulta mantener tu atención en el presente? ¿Qué actividades te ayudan a anclarte?",
+                        aiContext: "El usuario está considerando el desafío de vivir en el presente y las actividades que le ayudan a ello.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Ancla"
+                    },
+                    {
+                        title: "Pequeñas Anclas para el Día a Día",
+                        content: "<p>No necesitas grandes retiros para practicar la presencia. Pequeñas 'anclas' como enfocarte en tu respiración por un minuto, saborear conscientemente una comida, o escuchar atentamente los sonidos a tu alrededor, pueden marcar una gran diferencia.</p>",
+                        reflectionPrompt: "¿Qué pequeña 'ancla' podrías incorporar en tu rutina diaria para conectar más con el presente? ¿Cómo te imaginas que te haría sentir?",
+                        aiContext: "El usuario está pensando en pequeñas prácticas diarias para mejorar su presencia en el momento actual.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Mindfulness"
+                    }
+                ]
+            },
+            "descubriendo-identidad": {
+                title: "Descubriendo Quién Eres: Un Viaje Interior",
+                description: "Profundiza en la pregunta fundamental de la identidad y la búsqueda del autoconocimiento.",
+                topicImage: "https://placehold.co/100x100/001F3F/FFDB58?text=Identidad",
+                slides: [
+                    {
+                        title: "La Gran Pregunta: ¿Quién Soy Realmente?",
+                        content: "<p>Más allá de los roles que desempeñas (trabajador/a, amigo/a, hijo/a, etc.) y de tus logros, existe una pregunta más profunda: ¿Quién soy en mi esencia? Esta pregunta puede ser el inicio de un fascinante viaje de autodescubrimiento.</p>",
+                        reflectionPrompt: "Si tuvieras que describirte sin usar tus roles o logros, ¿qué palabras o sentimientos usarías para expresar tu esencia?",
+                        aiContext: "El usuario está reflexionando sobre su identidad esencial, más allá de roles y logros.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Interrogante"
+                    },
+                    {
+                        title: "La Brújula Interior: De lo Externo a lo Interno",
+                        content: "<p>A menudo buscamos definirnos por factores externos: aprobación, posesiones, estatus. Sin embargo, la verdadera brújula de la identidad reside en nuestro interior: valores, pasiones, y la aceptación de todas nuestras partes, incluso las que preferiríamos ignorar.</p>",
+                        reflectionPrompt: "¿En qué medida sientes que tu sentido de identidad depende de factores externos versus internos? ¿Cómo podrías fortalecer tu 'brújula interior'?",
+                        aiContext: "El usuario está explorando el balance entre las influencias externas e internas en su identidad y cómo fortalecer su autoconocimiento.",
+                        slideImage: "https://placehold.co/150x150/0A2342/F3F4F6?text=Brujula"
+                    }
+                ]
+            }
+        };
+
+        // --- DOM Elements ---
+        const topicSelectionScreen = document.getElementById('topic-selection-screen');
+        const presentationScreen = document.getElementById('presentation-screen');
+        const slideImageElement = document.getElementById('slide-image'); 
+        const slideTitleElement = document.getElementById('slide-title');
+        const slideContentElement = document.getElementById('slide-content');
+        const reflectionPromptContainer = document.getElementById('reflection-prompt-container');
+        const reflectionPromptTextElement = document.getElementById('reflection-prompt-text');
+        
+        const aiUserInput = document.getElementById('ai-user-input');
+        const aiSubmitButton = document.getElementById('ai-submit-button');
+        const aiResponseArea = document.getElementById('ai-response-area');
+        const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
+        const aiResponseTextElement = document.getElementById('ai-response-text');
+
+        const prevSlideButton = document.getElementById('prev-slide-button');
+        const nextSlideButton = document.getElementById('next-slide-button');
+        const backToTopicsButton = document.getElementById('back-to-topics-button');
+
+        // --- State Variables ---
+        let currentTopicId = null;
+        let currentSlideIndex = 0;
+
+        // --- Funciones para navegación y renderizado ---
+        function populateTopicCards() {
+            topicSelectionScreen.innerHTML = '<h2 class="text-2xl font-semibold text-white mb-6 text-center">Selecciona un tema para comenzar:</h2>'; 
+            for (const topicId in topicsData) {
+                const topic = topicsData[topicId];
+                const card = document.createElement('div');
+                card.className = 'topic-card';
+                card.innerHTML = `
+                    <img src="${topic.topicImage}" alt="Icono de ${topic.title}" class="topic-card-image" onerror="this.src='https://placehold.co/100x100/001F3F/FFDB58?text=Error'; this.alt='Imagen no disponible'">
+                    <div class="topic-card-content">
+                        <h3>${topic.title}</h3>
+                        <p>${topic.description}</p>
+                    </div>
+                `;
+                card.addEventListener('click', () => loadTopic(topicId));
+                topicSelectionScreen.appendChild(card);
+            }
+        }
+
+        function loadTopic(topicId) {
+            currentTopicId = topicId;
+            currentSlideIndex = 0;
+            topicSelectionScreen.classList.add('hidden');
+            presentationScreen.classList.remove('hidden');
+            displaySlide();
+        }
+
+        function displaySlide() {
+            if (!currentTopicId || !topicsData[currentTopicId]) return;
+            const topic = topicsData[currentTopicId];
+            const slide = topic.slides[currentSlideIndex];
+
+            slideTitleElement.textContent = slide.title;
+            slideContentElement.innerHTML = slide.content; 
+
+            if (slide.slideImage) {
+                slideImageElement.src = slide.slideImage;
+                slideImageElement.alt = `Imagen de ${slide.title}`;
+                slideImageElement.classList.remove('hidden');
+                slideImageElement.onerror = function() {
+                    this.src='https://placehold.co/150x150/0A2342/F3F4F6?text=Error';
+                    this.alt='Imagen no disponible';
+                };
+            } else {
+                slideImageElement.classList.add('hidden');
+            }
+
+            if (slide.reflectionPrompt) {
+                reflectionPromptTextElement.textContent = slide.reflectionPrompt;
+                reflectionPromptContainer.classList.remove('hidden');
+            } else {
+                reflectionPromptContainer.classList.add('hidden');
+            }
+            
+            aiUserInput.value = '';
+            aiResponseArea.classList.add('hidden');
+            aiResponseTextElement.textContent = '';
+
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            prevSlideButton.disabled = currentSlideIndex === 0;
+            nextSlideButton.disabled = currentSlideIndex === topicsData[currentTopicId].slides.length - 1;
+        }
+        
+        function goBackToTopics() {
+            presentationScreen.classList.add('hidden');
+            topicSelectionScreen.classList.remove('hidden');
+            currentTopicId = null;
+        }
+
+        prevSlideButton.addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                displaySlide();
+            }
+        });
+
+        nextSlideButton.addEventListener('click', () => {
+            if (currentTopicId && currentSlideIndex < topicsData[currentTopicId].slides.length - 1) {
+                currentSlideIndex++;
+                displaySlide();
+            }
+        });
+
+        backToTopicsButton.addEventListener('click', goBackToTopics);
+
+        // --- Integración con ChatGPT ---
+        aiSubmitButton.addEventListener('click', async () => {
+            if (!currentTopicId) return;
+            const topic = topicsData[currentTopicId];
+            const slide = topic.slides[currentSlideIndex];
+            const userText = aiUserInput.value.trim();
+
+            // Construimos el mensaje del sistema con el contexto
+            let systemMessage = `Eres un guía emocional compasivo y reflexivo. El usuario está explorando el tema de "${topic.title}", específicamente el aspecto de "${slide.title}". `;
+            systemMessage += `El contenido que está viendo es: ${slide.content.replace(/<[^>]+>/g, ' ')}. `;
+            if (slide.reflectionPrompt) {
+                 systemMessage += `La pregunta de reflexión asociada es: "${slide.reflectionPrompt}". `;
+            }
+            systemMessage += `Por favor, ofrece una respuesta de apoyo, empática y que invite a una mayor introspección en 2-4 frases. Evita dar consejos directos o diagnósticos. Anímale a seguir explorando sus sentimientos. No te presentes como una IA.`;
+
+            // Si no hay texto del usuario, usar la reflexión por defecto
+            let userQueryForAI = userText;
+            if (!userText && slide.reflectionPrompt) {
+                userQueryForAI = `Reflexión sobre: "${slide.reflectionPrompt}" en el contexto del tema.`;
+            } else if (!userText && !slide.reflectionPrompt) {
+                aiResponseTextElement.textContent = "Por favor, escribe tu reflexión o pregunta para obtener una guía.";
+                aiResponseArea.classList.remove('hidden');
+                return;
+            }
+            
+            aiResponseTextElement.textContent = '';
+            aiLoadingSpinner.classList.remove('hidden');
+            aiResponseArea.classList.remove('hidden');
+            aiSubmitButton.disabled = true;
+
+            try {
+                // La URL ahora apunta a tu función serverless.
+       	        // Vercel automáticamente hace que los archivos en la carpeta /api
+                // estén disponibles en la ruta /api/nombre-del-archivo
+                const apiUrl = '/api/chat'; // O /api/chat.js, Vercel suele manejar ambas
+
+                // El payload que envías a TU backend solo necesita los mensajes
+                const payloadForBackend = {
+                    messages: [
+                        { role: "system", content: systemMessage },
+                        { role: "user", content: userQueryForAI }
+                    ]
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // YA NO necesitas el encabezado 'Authorization' aquí,
+                        // porque tu backend lo añadirá al llamar a OpenAI.
+                    },
+                    body: JSON.stringify(payloadForBackend) // Envías el payload con los mensajes
+                });
+
+                if (!response.ok) {
+                    // Intenta obtener más detalles del error si tu backend los envía
+                    const errorData = await response.json().catch(() => ({ error: { message: "Error de red o respuesta no JSON desde tu backend."} }));
+                    console.error("Error desde tu backend:", errorData);
+                    throw new Error(`Error de API: ${response.status} ${response.statusText}. Detalles: ${JSON.stringify(errorData.error?.message || errorData)}`);
+                }
+
+                const result = await response.json();
+                // La respuesta de OpenAI vendrá anidada si tu backend la devuelve tal cual.
+                // Asumiendo que tu backend devuelve la respuesta completa de OpenAI:
+                if (result.choices && result.choices.length > 0 && result.choices[0].message && result.choices[0].message.content) {
+                    const text = result.choices[0].message.content.trim();
+                    aiResponseTextElement.textContent = text;
+                } else if (result.error) { // Si tu backend formateó un error
+                    console.error("Error devuelto por tu backend:", result.error);
+                    aiResponseTextElement.textContent = `Error: ${result.error.details || result.error.message || 'Error desconocido del backend.'}`;
+                }
+                else {
+                    console.error("Respuesta inesperada de tu backend:", result);
+                    aiResponseTextElement.textContent = "No se pudo obtener una reflexión en este momento (respuesta inesperada de tu backend). Intenta de nuevo más tarde.";
+                }
+
+            } catch (error) {
+                console.error('Error al contactar tu API (/api/chat):', error);
+                aiResponseTextElement.textContent = `Error al obtener la reflexión: ${error.message}. Revisa la consola.`;
+            } finally {
+                aiLoadingSpinner.classList.add('hidden');
+                aiSubmitButton.disabled = false;
+            }
+        });
+
+        // --- Inicialización ---
+        populateTopicCards();
+    </script>
+</body>
+</html>
